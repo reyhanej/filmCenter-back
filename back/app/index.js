@@ -5,7 +5,7 @@ const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const cors = require("cors");
 
-const port = config.port || 3000;
+const port = config.port;
 const { mongoConnection } = require("app/helpers/init_mongodb");
 
 module.exports = class Application {
