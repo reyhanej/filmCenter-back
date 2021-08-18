@@ -32,7 +32,8 @@ module.exports = class Application {
       },
     });
     app.use(limiter);
-    const whiteList = ["http://localhost:3001"];
+
+    /*  const whiteList = ["http://localhost:3001"];
     if (config.useCorsOptions !== "false") {
       const corsOptions = {
         origin: function (origin, callback) {
@@ -44,9 +45,9 @@ module.exports = class Application {
         },
       };
       app.use(cors(corsOptions));
-    } else {
-      app.use(cors());
-    }
+    } else { */
+    app.use(cors());
+    // }
     app.use(helmet());
     if (config.devMode) {
       app.use(morgan("dev"));

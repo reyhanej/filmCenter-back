@@ -1,6 +1,6 @@
 const controller = require("./Controller");
 const createError = require("http-errors");
-const User = require("app/models/user.model");
+const User = require("app/models/User.model");
 const { authSchema } = require("validations/validation_schema");
 const {
   signAccessToken,
@@ -40,7 +40,7 @@ class Auth extends controller {
 
       const accessToken = await signAccessToken(user.id);
       const refreshToken = await signRefreshToken(user.id);
-      res.send({ accessToken });
+      res.send({ accessToken, refreshToken });
     } catch (err) {
       if (err.isJoi)
         return next(createError.BadRequest("Invalid Email or Password!"));
