@@ -35,7 +35,7 @@ module.exports = class Application {
     const whiteList = ["http://localhost:3001"];
     if (config.useCorsOptions !== "false") {
       const corsOptions = {
-        origin: function (prigin, callback) {
+        origin: function (origin, callback) {
           if (whiteList.indexOf(origin) !== -1) {
             callback(null, true);
             return;
