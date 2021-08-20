@@ -11,11 +11,14 @@ router.use("/public", publicRoutes)
 router.use((err, req, res, next) => {
     const status = err.status || 500
     res.status(status)
+    const errorData = {
+        data: {
+            error: err.message
+        },
+        status
+    }
     res.send({
-        error: {
-            status: status,
-            message: err.message
-        }
+        ...errorData
     })
 })
 router.use(async(req, res, next) => {
