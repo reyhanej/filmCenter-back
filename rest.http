@@ -1,19 +1,42 @@
-GET http://localhost:3000
+GET http://localhost:3000/api/v1/public/
 
-### Login route
-POST  http://localhost:3000/auth/login
+###
 
-### Register route
-POST  http://localhost:3000/auth/register
+GET http://localhost:3000/notfoundpage
 
+###
+POST http://localhost:3000/api/v1/public/auth/login
 Content-Type: application/json
+
 {
-    "email":"1100.reyhanej@gmail.com",
-    "password": "123456"
+    "email" : "morteza@gmail.com",
+    "password" : "123456"
+}
+###
+POST http://localhost:3000/api/v1/public/auth/register
+Content-Type: application/json
+
+{
+    "email" : "morteza@gmail.com",
+    "password" : "123456"
 }
 
-### Refresh-token route
-POST  http://localhost:3000/auth/refresh-token
+###
+POST http://localhost:3000/api/v1/public/auth/refresh-token
+Content-Type: application/json
 
-### Logout route
-DELETE   http://localhost:3000/auth/logout
+{
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MTczNzUxNDcsImV4cCI6MTYyNzc0MzE0NywiYXVkIjoiNjA0OTAzNWEyMmRmODQzNDMwOTk4YWM5IiwiaXNzIjoia25vd2xhZ2UuaXIifQ.VrvcQOVl8zXkiqGSimaw3cjHohRw9HKFJVTMTcq-6T4"
+}
+
+###
+DELETE http://localhost:3000/api/v1/public/auth/logout
+Content-Type: application/json
+
+{
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MTczNzUxNDcsImV4cCI6MTYyNzc0MzE0NywiYXVkIjoiNjA0OTAzNWEyMmRmODQzNDMwOTk4YWM5IiwiaXNzIjoia25vd2xhZ2UuaXIifQ.VrvcQOVl8zXkiqGSimaw3cjHohRw9HKFJVTMTcq-6T4"
+}
+
+###
+GET http://localhost:3000/api/v1/private/profile/info
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MTczNzUxNDcsImV4cCI6MTYxNzM3NjA0NywiYXVkIjoiNjA0OTAzNWEyMmRmODQzNDMwOTk4YWM5IiwiaXNzIjoia25vd2xhZ2UuaXIifQ.i_bS87e0oSkXnK-4IRlgJDBq5rO3nVkOI4C9b2gH5eA
