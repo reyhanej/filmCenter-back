@@ -1,84 +1,89 @@
 const controller = require("./Controller");
 const createError = require("http-errors");
 const User = require("app/models/User.model");
-const { authSchema } = require("validations/validation_schema");
 const {
-    signAccessToken,
-    signRefreshToken,
-    verifyRefreshToken,
+  loginSchema,
+  registerSchema,
+} = require("validations/validation_schema");
+const {
+  signAccessToken,
+  signRefreshToken,
+  verifyRefreshToken,
 } = require("app/JWT");
 const redisClient = require("app/helpers/init_redis");
 
 class Auth extends controller {
-    async register(req, res, next) {
-        try {
-            const result = await authSchema.validateAsync(req.body);
-            const exist = await User.findOne({ email: result.email });
+  async register(req, res, next) {
+    try {
+      const result = await registerSchema.validateAsync(req.body, {
+        abortEarly: false,
+      });
+      const exist = await User.findOne({ email: result.email });
 
-            if (exist)
-                throw createError.Conflict(`${result.email} has already been register`);
-            const user = new User(result);
-            const savedUser = await user.save();
-            const accessToken = await signAccessToken(savedUser.id);
-            console.log("before")
-            const refreshToken = await signRefreshToken(savedUser.id);
-            console.log("after")
-            res.send({ accessToken, refreshToken });
-        } catch (err) {
-            if (err.isJoi) err.status = 422;
-            next(err);
-        }
+      if (exist)
+        throw createError.Conflict(`${result.email} has already been register`);
+      const user = new User(result);
+      const savedUser = await user.save();
+      const accessToken = await signAccessToken(savedUser.id);
+      const refreshToken = await signRefreshToken(savedUser.id);
+      res.send({ accessToken, refreshToken });
+    } catch (err) {
+      if (err.isJoi) err.status = 422;
+      next(err);
     }
-    async login(req, res, next) {
-        try {
-            const result = await authSchema.validateAsync(req.body);
-            const user = await User.findOne({ email: result.email });
+  }
+  async login(req, res, next) {
+    try {
+      const result = await loginSchema.validateAsync(req.body, {
+        abortEarly: false,
+      });
 
-            if (!user) throw createError.NotFound("User is not registered");
+      const user = await User.findOne({ email: result.email });
 
-            const checkPass = await user.isValidPassword(result.password);
-            if (!checkPass)
-                throw createError.Unauthorized("Invalid Email or Password!");
+      if (!user) throw createError.NotFound("User is not registered");
 
-            const accessToken = await signAccessToken(user.id);
-            const refreshToken = await signRefreshToken(user.id);
-            res.send({ accessToken, refreshToken });
-        } catch (err) {
-            if (err.isJoi)
-                return next(createError.BadRequest("Invalid Email or Password!"));
-            next(err);
-        }
+      const checkPass = await user.isValidPassword(result.password);
+      if (!checkPass)
+        throw createError.Unauthorized("Invalid Email or Password!");
+
+      const accessToken = await signAccessToken(user.id);
+      const refreshToken = await signRefreshToken(user.id);
+      res.send({ accessToken, refreshToken });
+    } catch (err) {
+      if (err.isJoi) err.status = 422;
+      next(err);
     }
-    async refreshToken(req, res, next) {
-        try {
-            const { refreshToken } = req.body;
-            if (!refreshToken) throw createError.BadRequest();
-            const userId = await verifyRefreshToken(refreshToken);
+  }
+  async refreshToken(req, res, next) {
+    try {
+      const { refreshToken } = req.body;
+      if (!refreshToken) throw createError.BadRequest();
+      const userId = await verifyRefreshToken(refreshToken);
 
-            const accessToken = await signAccessToken(userId);
-            const refToken = await signRefreshToken(userId);
-            res.send({ accessToken, refreshToken: refToken });
-        } catch (e) {
-            next(e);
-        }
+      const accessToken = await signAccessToken(userId);
+      const refToken = await signRefreshToken(userId);
+      res.send({ accessToken, refreshToken: refToken });
+    } catch (e) {
+      next(e);
     }
-    async logout(req, res, next) {
-        try {
-            const { refreshToken } = req.body;
-            if (!refreshToken) throw createError.BadRequest();
-            const userId = await verifyRefreshToken(refreshToken);
-            redisClient.DEL(userId, (err, val) => {
-                if (err) {
-                    console.log(err.message);
-                    throw createError.InternalServerError();
-                }
-                console.log(val);
-                res.sendStatus(204);
-            });
-        } catch (e) {
-            next(e);
+  }
+  async logout(req, res, next) {
+    try {
+      const { refreshToken } = req.body;
+      if (!refreshToken) throw createError.BadRequest();
+      const userId = await verifyRefreshToken(refreshToken);
+      redisClient.DEL(userId, (err, val) => {
+        if (err) {
+          console.log(err.message);
+          throw createError.InternalServerError();
         }
+        console.log(val);
+        res.sendStatus(204);
+      });
+    } catch (e) {
+      next(e);
     }
+  }
 }
 
 module.exports = new Auth();
