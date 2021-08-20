@@ -7,7 +7,7 @@ module.exports = {
             const payload = {}
             const secret = config.accessTokenSecret
             const options = {
-                expiresIn: "1h",
+                expiresIn: "30m",
                 issuer: "google.com",
                 audience: userId
             }
@@ -39,7 +39,7 @@ module.exports = {
             const payload = {}
             const secret = config.refreshTokenSecret
             const options = {
-                expiresIn: "1y",
+                expiresIn: "180d",
                 issuer: "google.com",
                 audience: userId
             }

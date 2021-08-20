@@ -13,6 +13,14 @@ const UserSchema = new Schema({
         type: String,
         required: true,
     },
+    userName: {
+        type: String,
+        uniqe: true,
+    },
+    fullName: {
+        type: String,
+        required: true
+    }
 
 })
 UserSchema.pre("save", async function(next) {
